@@ -2,19 +2,23 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\DAO\InscricaoDAO;
+use App\DAO\UsuarioDAO;
 use App\DAO\WorkshopDAO;
-use App\Services\WorkshopService;
+use App\Services\InscricaoService;
 use PDO;
 use InvalidArgumentException;
 
-class WorkshopController extends Controller
+class InscricaoController extends Controller
 {
-    private WorkshopService $service;
+    private InscricaoService $service;
 
     public function __construct(PDO $pdo)
     {
-        $dao = new WorkshopDAO($pdo);
-        $this->service = new WorkshopService($dao);
+        $dao = new InscricaoDAO($pdo);
+        $usuarioDao = new UsuarioDAO($pdo);
+        $workshopDao = new WorkshopDAO($pdo);
+        $this->service = new InscricaoService($dao, $usuarioDao, $workshopDao);
     }
 
     public function index(): void
@@ -26,11 +30,17 @@ class WorkshopController extends Controller
     public function show(int $id): void
     {
         $row = $this->service->getById($id);
-        if (!$row) {
-            $this->json(['error'=>'Workshop não encontrado'],404);
+        if(!$row){
+            $this->json(['error'=>'Inscrição não encontrada'],404);
             return;
         }
         $this->json($row);
+    }
+
+    public function listByUsuario(int $usuario_id): void
+    {
+        $rows = $this->service->listByUsuario($usuario_id);
+        $this->json($rows);
     }
 
     public function store(): void
@@ -39,19 +49,6 @@ class WorkshopController extends Controller
             $data = $this->input();
             $id = $this->service->create($data);
             $this->json(['id'=>$id],201);
-        } catch(InvalidArgumentException $e) {
-            $this->json(['error'=>$e->getMessage()],400);
-        } catch(\Exception $e) {
-            $this->json(['error'=>'Erro interno','message'=>$e->getMessage()],500);
-        }
-    }
-
-    public function update(int $id): void
-    {
-        try {
-            $data = $this->input();
-            $ok = $this->service->update($id,$data);
-            $this->json(['success'=>$ok],$ok?200:500);
         } catch(InvalidArgumentException $e) {
             $this->json(['error'=>$e->getMessage()],400);
         } catch(\Exception $e) {

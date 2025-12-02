@@ -2,15 +2,12 @@
 namespace App\Models;
 use App\Core\Model;
 
-class Workshop extends Model
+class Usuario extends Model
 {
     public ?int $id = null;
-    public string $titulo;
-    public ?string $descricao = null;
-    public ?string $data = null;
-    public ?string $local = null;
-    public ?int $vagas = null;
-    public ?string $instrutor_email = null;
+    public string $nome;
+    public string $email;
+    public string $senha;
     public ?string $created_at = null;
 
     public function __construct(array $data = [])

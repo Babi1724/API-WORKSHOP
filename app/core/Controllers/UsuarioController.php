@@ -2,19 +2,19 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\DAO\WorkshopDAO;
-use App\Services\WorkshopService;
+use App\DAO\UsuarioDAO;
+use App\Services\UsuarioService;
 use PDO;
 use InvalidArgumentException;
 
-class WorkshopController extends Controller
+class UsuarioController extends Controller
 {
-    private WorkshopService $service;
+    private UsuarioService $service;
 
     public function __construct(PDO $pdo)
     {
-        $dao = new WorkshopDAO($pdo);
-        $this->service = new WorkshopService($dao);
+        $dao = new UsuarioDAO($pdo);
+        $this->service = new UsuarioService($dao);
     }
 
     public function index(): void
@@ -26,8 +26,8 @@ class WorkshopController extends Controller
     public function show(int $id): void
     {
         $row = $this->service->getById($id);
-        if (!$row) {
-            $this->json(['error'=>'Workshop não encontrado'],404);
+        if(!$row) {
+            $this->json(['error'=>'Usuário não encontrado'],404);
             return;
         }
         $this->json($row);
